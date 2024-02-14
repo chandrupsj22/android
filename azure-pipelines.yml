@@ -1,0 +1,47 @@
+trigger:
+- sampleAppp
+
+pool:
+  vmImage: 'macOS-latest'
+# variables:  
+#   XCODE_VERSION: '12.5' 
+jobs:
+- job: Build_iOS
+  displayName: 'Build iOS'
+  steps:
+  - script: |
+      cd sample_app
+      ls -la
+      echo "Installing Flutter..."
+      git clone https://github.com/flutter/flutter.git -b stable
+      export PATH="$PATH:`pwd`/flutter/bin"
+      flutter doctor
+      flutter config --no-analytics
+      echo "------------------flutter pub get---------------------"            
+      flutter pub get
+      flutter pub upgrade --major-versions
+      echo "------------------flutter build ios---------------------"
+      flutter build ios --release --no-codesign
+    displayName: 'Application Build for iOS'
+
+  # - task: CopyFiles@2
+  #   displayName: 'Copy IPA file'
+  #   inputs:
+  #     SourceFolder: '$(System.DefaultWorkingDirectory)/sample_app/build/ios/iphoneos/'
+  #     Contents: '**/*.ipa'
+  #     TargetFolder: '$(Build.ArtifactStagingDirectory)/'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish iOS Artifact'
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/sample_app/build/ios/iphoneos/Runner.app'
+      ArtifactName: 'app-release-ios'
+      publishLocation: 'Container'
+
+  
+  # - task: PublishBuildArtifacts@1
+  #   displayName: 'Publish iOS Artifact'
+  #   inputs:
+  #     PathtoPublish: '$(System.DefaultWorkingDirectory)/sample_app/**/*.ipa'
+  #     ArtifactName: 'app-release-ios'
+  #     publishLocation: 'Container'

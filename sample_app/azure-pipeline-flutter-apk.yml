@@ -1,0 +1,50 @@
+trigger:
+- sampleAppp
+
+pool:
+  vmImage: 'ubuntu-latest'
+  
+
+jobs:
+- job: Build_Android
+  displayName: 'Build Android'
+  steps:
+  # - task: FlutterInstall@0
+  #   inputs:
+  #    mode: 'auto'
+  #    channel: 'stable'
+  #    version: 'latest'
+
+  # - script: flutter config --no-analytics
+  #   displayName: 'Disable Flutter Analytics'  
+
+  - script: |      
+      cd sample_app
+      echo "Installing Flutter..."
+      git clone https://github.com/flutter/flutter.git -b stable
+      export PATH="$PATH:`pwd`/flutter/bin"
+      flutter doctor
+      flutter config --no-analytics
+      echo "------------------flutter pub get---------------------"
+      flutter pub get
+      flutter pub upgrade --major-versions
+      echo "------------------flutter build apk---------------------"
+      flutter build apk --release --no-tree-shake-icons      
+    displayName: 'Application Build...'   
+
+  # - script: flutter pub outdated
+  #   displayName: 'Check for Outdated Packages'
+
+  # - script: flutter pub get
+  #   displayName: 'Flutter Pub Get'
+
+  # - script: flutter build apk
+  #   displayName: 'Build APK'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish APK Artifact'
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/sample_app/build/app/outputs/flutter-apk/app-release.apk'
+      ArtifactName: 'app-release-apk'
+      publishLocation: 'Container'
+  
