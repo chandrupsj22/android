@@ -22,8 +22,8 @@ jobs:
         cd /home/runner/work/android/android/sampleApp
         pwd
         ls -la
-        flutter pub get
-        flutter pub upgrade --major-versions
+        # flutter pub get
+        # flutter pub upgrade --major-versions
         echo "------------------flutter build apk---------------------"
         flutter build apk --release --no-tree-shake-icons
 
