@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main  # Change to the appropriate branch 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Flutter
+      run: |
+        echo "Installing Flutter..."
+        git clone https://github.com/flutter/flutter.git -b stable
+        export PATH="$PATH:$(pwd)/flutter/bin"
+        flutter doctor
+        flutter config --no-analytics
+        echo "------------------flutter pub get---------------------"
+        flutter pub get
+        flutter pub upgrade --major-versions
+        echo "------------------flutter build apk---------------------"
+        flutter build apk --release --no-tree-shake-icons
+
+    - name: Publish APK Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release-apk
+        path: sample_app/build/app/outputs/flutter-apk/app-release.apk
