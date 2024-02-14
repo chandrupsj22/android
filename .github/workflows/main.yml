@@ -19,6 +19,8 @@ jobs:
         flutter doctor
         flutter config --no-analytics
         echo "------------------flutter pub get---------------------"
+        cd /home/runner/work/android/android
+        pwd
         flutter pub get
         flutter pub upgrade --major-versions
         echo "------------------flutter build apk---------------------"
